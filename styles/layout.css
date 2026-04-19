@@ -64,29 +64,29 @@
 
 .grid-two {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-xl);
 }
 @container (min-width: 52rem), (min-width: 52rem) {
   /* fallback */
 }
 @media (min-width: 56rem) {
-  .grid-two { grid-template-columns: 1fr 1fr; gap: var(--space-2xl); }
+  .grid-two { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--space-2xl); }
 }
 
 .grid-lead-body {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-lg);
 }
 @media (min-width: 56rem) {
-  .grid-lead-body { grid-template-columns: 7rem 1fr; gap: var(--space-2xl); }
+  .grid-lead-body { grid-template-columns: 7rem minmax(0, 1fr); gap: var(--space-2xl); }
 }
 
 /* Asymmetric split — used for feature sections */
 .grid-split {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-xl);
 }
 @media (min-width: 64rem) {
