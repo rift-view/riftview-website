@@ -36,3 +36,9 @@ build/
 
 # Logs
 *.log
+
+# Private design context
+.impeccable.md
+
+# Generated screenshots
+_screenshots/
