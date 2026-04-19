@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <script>document.documentElement.classList.add("js-enhanced");</script>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="theme-color" content="#1a120c" />
+
+  <title>RiftView — The cloud incident diagnostic layer</title>
+  <meta name="description" content="Scan your cloud account in one pass. See every cross-service dependency as a live graph. Click any resource — know in 10 seconds what else breaks if it fails." />
+
+  <meta property="og:title" content="RiftView — The cloud incident diagnostic layer" />
+  <meta property="og:description" content="One live graph of your entire cloud account. Blast radius in one click. Drift detection against Terraform. Guided remediation." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="assets/riftview-logo.jpg" />
+
+  <link rel="icon" type="image/jpeg" href="assets/riftview-logo.jpg" />
+
+  <!-- Fonts: Archivo Narrow (display, industrial condensed),
+               Libre Franklin (body, American gothic revival),
+               Fragment Mono (code, editorial monospace). -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:ital,wght@0,400..700;1,400..700&family=Libre+Franklin:ital,wght@0,300..700;1,300..700&family=Fragment+Mono:ital@0;1&display=swap" />
+
+  <link rel="stylesheet" href="styles/tokens.css" />
+  <link rel="stylesheet" href="styles/base.css" />
+  <link rel="stylesheet" href="styles/layout.css" />
+  <link rel="stylesheet" href="styles/components.css" />
+  <link rel="stylesheet" href="styles/sections.css" />
+</head>
+<body>
+
+  <!-- ============================================================
+       NAV
+       ============================================================ -->
+  <header class="nav" id="nav">
+    <a href="#" class="wordmark" aria-label="RiftView home">
+      <span class="mark" aria-hidden="true"></span>
+      <span>RIFTVIEW</span>
+    </a>
+    <nav aria-label="Primary">
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="https://github.com/rift-view/riftview" target="_blank" rel="noopener">GitHub ↗</a></li>
+      </ul>
+    </nav>
+    <div class="nav-end">
+      <a href="https://github.com/rift-view/riftview" target="_blank" rel="noopener" class="btn btn-ghost">GitHub</a>
+      <a href="#download" class="btn btn-primary">
+        Download
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+          <path d="M8 2v9m0 0l-3.5-3.5M8 11l3.5-3.5M3 13.5h10" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       HERO
+       ============================================================ -->
+  <section class="hero" aria-labelledby="hero-h1">
+    <div class="hero-backdrop" aria-hidden="true"></div>
+
+    <div class="register register-tl">RV · 0A / CLOUD TOPOLOGY</div>
+    <div class="register register-tr">BUILD 0.1 / MAC · WIN · LINUX</div>
+
+    <div class="shell">
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1 id="hero-h1" data-reveal style="--reveal-delay: 80ms">
+            The diagnostic layer your cloud <span class="ember">doesn&rsquo;t</span> have.
+          </h1>
+          <p class="lede" data-reveal style="--reveal-delay: 160ms">
+            Scan your architecture in one pass. See every cross-service dependency as a live graph. Click any resource &mdash; know in 10 seconds what else breaks if it fails.
+          </p>
+          <div class="hero-cta" data-reveal style="--reveal-delay: 240ms">
+            <a href="#download" class="btn btn-primary" data-hero-cta>
+              <span data-hero-cta-text>Download for macOS</span>
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                <path d="M8 2v9m0 0l-3.5-3.5M8 11l3.5-3.5M3 13.5h10" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </a>
+            <a href="https://github.com/rift-view/riftview" target="_blank" rel="noopener" class="btn btn-ghost">
+              <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+                <path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 005.47 7.59c.4.07.55-.17.55-.38v-1.34c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.23 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.77-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.22 2.2.82a7.6 7.6 0 014 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.28.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0016 8c0-4.42-3.58-8-8-8z"/>
+              </svg>
+              View on GitHub
+            </a>
+          </div>
+          <div class="hero-meta" data-reveal style="--reveal-delay: 320ms">
+            <div><span class="k">Release</span><span class="v">v0.1 · 2026</span></div>
+            <div><span class="k">Platform</span><span class="v">macOS · Windows · Linux</span></div>
+            <div><span class="k">License</span><span class="v">Open source</span></div>
+            <div><span class="k">Creds</span><span class="v">Local, read-only</span></div>
+          </div>
+        </div>
+
+        <div class="hero-graph" aria-hidden="true" data-reveal style="--reveal-delay: 400ms">
+          <canvas id="graph-canvas"></canvas>
+          <div class="graph-caption top-left"><span class="ln"></span> Click: blast radius</div>
+          <div class="graph-caption top-right"><span class="ln"></span> Database · region primary</div>
+          <div class="graph-caption bottom-left"><span class="ln"></span> 23 dependents found</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-cue" aria-hidden="true">
+      <span>Scroll</span>
+      <span class="bar"></span>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PROBLEM
+       ============================================================ -->
+  <section class="section problem" aria-labelledby="problem-h">
+    <div class="shell">
+      <div class="grid-split">
+        <div>
+          <div class="eyebrow" data-reveal>The problem</div>
+          <h2 id="problem-h" class="problem-lede" data-reveal style="--reveal-delay: 80ms">
+            Your cloud console is organized by <span class="ember">service silo</span>.
+          </h2>
+          <div class="problem-body" data-reveal style="--reveal-delay: 160ms">
+            <p style="margin-top: var(--space-lg)">
+              When something breaks, you open 4 tabs to answer one question. You tab between compute, databases, queues, functions, trying to piece together what actually depends on what.
+            </p>
+            <p>
+              The console is a service browser. It cannot show you cross-service relationships. It cannot tell you what breaks if a queue goes down. It cannot compare your live infra to your IaC.
+            </p>
+          </div>
+        </div>
+
+        <div class="tabs-stack" data-reveal style="--reveal-delay: 240ms">
+          <div class="tabs-badge">4 tabs · 0 answers</div>
+          <div class="tab-window -t1">
+            <div class="chrome">
+              <div class="dots"><span></span><span></span><span></span></div>
+              <div class="url">console.cloud/compute</div>
+            </div>
+            <div class="body"><div class="bars"><div class="bar"></div><div class="bar"></div></div></div>
+          </div>
+          <div class="tab-window -t2">
+            <div class="chrome">
+              <div class="dots"><span></span><span></span><span></span></div>
+              <div class="url">console.cloud/databases</div>
+            </div>
+            <div class="body"><div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div>
+          </div>
+          <div class="tab-window -t3">
+            <div class="chrome">
+              <div class="dots"><span></span><span></span><span></span></div>
+              <div class="url">console.cloud/queues</div>
+            </div>
+            <div class="body"><div class="bars"><div class="bar"></div><div class="bar"></div></div></div>
+          </div>
+          <div class="tab-window -t4">
+            <div class="chrome">
+              <div class="dots"><span></span><span></span><span></span></div>
+              <div class="url">console.cloud/functions</div>
+            </div>
+            <div class="body"><div class="bars"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ANSWER (editorial statement)
+       ============================================================ -->
+  <section class="answer section" aria-labelledby="answer-h">
+    <div class="shell">
+      <div class="eyebrow" data-reveal>The answer</div>
+      <h2 id="answer-h" class="answer-mega" data-reveal style="--reveal-delay: 80ms">
+        RiftView answers it <span class="ember">in&nbsp;ten seconds</span>.
+      </h2>
+      <div class="answer-timer" data-reveal style="--reveal-delay: 240ms">
+        <span class="num" data-count="10">00</span>
+        <span>seconds · full architecture scan → blast radius visible</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FEATURES
+       ============================================================ -->
+  <section class="section" id="features" aria-labelledby="features-h">
+    <div class="shell">
+      <div class="section-head">
+        <div class="eyebrow" data-reveal>Five things it does</div>
+        <h2 id="features-h" data-reveal style="--reveal-delay: 80ms">
+          Built for the ten minutes when nothing else matters.
+        </h2>
+        <p class="lede" data-reveal style="--reveal-delay: 160ms">
+          Not a dashboard. Not another observability tool. An incident-response surface that answers one kind of question &mdash; fast.
+        </p>
+      </div>
+
+      <!-- Feature 01 — Blast radius -->
+      <article class="feature">
+        <div class="grid-split">
+          <div data-reveal>
+            <div class="feature-num"><b>01</b> &nbsp;/&nbsp; Blast radius</div>
+            <h3>Click a node. See <span class="ember">what breaks</span> if it fails.</h3>
+            <p>
+              No tabs. No guessing. Click any resource &mdash; connected resources highlight, everything else dims. The subgraph you need. Nothing you don&rsquo;t.
+            </p>
+            <div class="feature-stat">
+              <span class="big">4 tabs &nbsp;→&nbsp; 1 click</span>
+              <span class="cap">How long it takes to find downstream dependents</span>
+            </div>
+          </div>
+
+          <div class="feature-demo" data-reveal style="--reveal-delay: 120ms">
+            <div class="demo-head">
+              <span>blast-radius.demo</span>
+              <span>Database · prod-users-db</span>
+            </div>
+            <canvas id="blast-canvas" aria-hidden="true"></canvas>
+          </div>
+        </div>
+      </article>
+
+      <!-- Feature 02 — Cross-service graph -->
+      <article class="feature">
+        <div class="grid-split -reverse">
+          <div data-reveal>
+            <div class="feature-num"><b>02</b> &nbsp;/&nbsp; Live cross-service graph</div>
+            <h3>Your entire stack. <span class="ember">One pass.</span> Every service.</h3>
+            <p>
+              RiftView scans every service your provider exposes in a single run and holds the topology as a connected graph. Not per-service snapshots &mdash; a whole-account model that stays live.
+            </p>
+            <div class="feature-stat">
+              <span class="big">47 services · 1 graph</span>
+              <span class="cap">Cross-service edges, kept fresh between scans</span>
+            </div>
+          </div>
+
+          <div class="feature-demo" data-reveal style="--reveal-delay: 120ms">
+            <div class="demo-head">
+              <span>account-scan.log</span>
+              <span class="pill pill-ok"><span class="dot"></span>live</span>
+            </div>
+            <div class="term-body" style="padding: 0 var(--space-2xs)">
+              <div><span class="c-prompt">scan&nbsp;›</span> <span class="c-str">"prod"</span> <span class="c-flag">--regions=primary,secondary</span></div>
+              <div class="c-dim">discovering resources&hellip;</div>
+              <div>compute &nbsp;<span class="c-num">142</span> instances   <span class="c-dim">→</span> <span class="c-num">38</span> firewall rules</div>
+              <div>database  <span class="c-num">9</span> clusters     &nbsp; <span class="c-dim">→</span> <span class="c-num">7</span> subnets</div>
+              <div>functions <span class="c-num">213</span> handlers    <span class="c-dim">→</span> <span class="c-num">54</span> roles</div>
+              <div>queues  &nbsp;<span class="c-num">31</span> queues       &nbsp;<span class="c-dim">→</span> <span class="c-num">18</span> consumers</div>
+              <div>storage &nbsp;<span class="c-num">94</span> buckets       <span class="c-dim">→</span> <span class="c-num">116</span> policies</div>
+              <div class="c-dim">&hellip;38 more services scanned</div>
+              <div><span class="c-ok">✓</span> graph assembled  &nbsp;<span class="c-dim">8.2s · 4,807 edges · 1,613 nodes</span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Feature 03 — Top risks -->
+      <article class="feature">
+        <div class="grid-split">
+          <div data-reveal>
+            <div class="feature-num"><b>03</b> &nbsp;/&nbsp; Top risks</div>
+            <h3>Not forty warnings. The <span class="ember">three</span> things that matter.</h3>
+            <p>
+              Most scanners hand you 40 findings sorted by nothing. RiftView surfaces the three highest-severity chain-of-failure risks &mdash; the ones that take your stack down, not the ones your compliance tool nags about.
+            </p>
+            <div class="feature-stat">
+              <span class="big">3 ranked · 0 filler</span>
+              <span class="cap">Severity ordered by blast radius, not by finding count</span>
+            </div>
+          </div>
+
+          <div class="feature-demo" data-reveal style="--reveal-delay: 120ms">
+            <div class="demo-head">
+              <span>top-risks.panel</span>
+              <span class="pill pill-danger"><span class="dot"></span>action required</span>
+            </div>
+            <div class="risks">
+              <div class="risk">
+                <div class="sev">S1</div>
+                <div class="body">
+                  <div class="t">Single-zone database backing 14 function consumers</div>
+                  <div class="s">prod-users-db · primary-a · no replica</div>
+                </div>
+                <div class="arr">→</div>
+              </div>
+              <div class="risk -med">
+                <div class="sev">S2</div>
+                <div class="body">
+                  <div class="t">Queue without dead-letter feeding order-processor</div>
+                  <div class="s">order-intake · 14d retention · 0 DLQ</div>
+                </div>
+                <div class="arr">→</div>
+              </div>
+              <div class="risk -low">
+                <div class="sev">S3</div>
+                <div class="body">
+                  <div class="t">Role spans 9 services · over-permissioned</div>
+                  <div class="s">role/fn-shared · 312 effective actions</div>
+                </div>
+                <div class="arr">→</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Feature 04 — Drift detection -->
+      <article class="feature">
+        <div class="grid-split -reverse">
+          <div data-reveal>
+            <div class="feature-num"><b>04</b> &nbsp;/&nbsp; Drift detection</div>
+            <h3 style="max-width: none; white-space: nowrap">Your IaC.<br>Your current deployment.<br><span class="ember">A clean diff.</span></h3>
+            <p>
+              RiftView compares your current deployment against your state file. Changes that happened outside your IaC &mdash; console clicks, one-off CLI fixes &mdash; show up as diff lines with the fix commands ready to run.
+            </p>
+            <div class="feature-stat">
+              <span class="big">IaC ↔ Reality</span>
+              <span class="cap">Drift surfaced per resource, with fix commands</span>
+            </div>
+          </div>
+
+          <div class="feature-demo" data-reveal style="--reveal-delay: 120ms">
+            <div class="demo-head">
+              <span>drift · terraform.tfstate → live</span>
+              <span class="pill pill-danger"><span class="dot"></span>2 resources drifted</span>
+            </div>
+            <div class="diff">
+              <div class="diff-head">
+                <span>firewall_rule.api-public</span>
+                <span>region: primary</span>
+              </div>
+              <div class="diff-body">
+                <div class="line"><span class="ln">12</span><span class="mk"> </span><span>ingress {</span></div>
+                <div class="line -rem"><span class="ln">13</span><span class="mk">–</span><span>&nbsp;&nbsp;cidr_blocks = ["10.0.0.0/8"]</span></div>
+                <div class="line -add"><span class="ln">13</span><span class="mk">+</span><span>&nbsp;&nbsp;cidr_blocks = ["0.0.0.0/0"]</span></div>
+                <div class="line"><span class="ln">14</span><span class="mk"> </span><span>&nbsp;&nbsp;from_port = 443</span></div>
+                <div class="line"><span class="ln">15</span><span class="mk"> </span><span>}</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Feature 05 — Guided remediation -->
+      <article class="feature">
+        <div class="grid-split">
+          <div data-reveal>
+            <div class="feature-num"><b>05</b> &nbsp;/&nbsp; Guided remediation</div>
+            <h3>Run the provider CLI fix. <span class="ember">From inside</span> the app.</h3>
+            <p>
+              No copy-pasting commands into a terminal at 2am, no double-checking the region flag. RiftView generates the exact CLI command for each finding, asks you to confirm, streams the output back to you.
+            </p>
+            <div class="feature-stat">
+              <span class="big">Copy · paste · swear &nbsp;→&nbsp; 0</span>
+              <span class="cap">One-click confirm. Streaming output. Rollback prepared.</span>
+            </div>
+          </div>
+
+          <div class="feature-demo" data-reveal style="--reveal-delay: 120ms">
+            <div class="demo-head">
+              <span>remediate · fw-00f2…</span>
+              <span class="pill"><span class="dot"></span>ready to run</span>
+            </div>
+            <div class="term">
+              <div class="term-head">
+                <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+                <span class="title">remediation.sh · preview</span>
+              </div>
+              <div class="term-body">
+                <div><span class="c-dim"># Revert firewall ingress to match terraform state</span></div>
+                <div><span class="c-prompt">$</span> cloud firewall <span class="c-flag">revoke-ingress</span> \</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-flag">--rule-id</span> <span class="c-str">fw-00f2a1c3b4d5e6789</span> \</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-flag">--protocol</span> tcp <span class="c-flag">--port</span> <span class="c-num">443</span> \</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-flag">--source</span> <span class="c-str">0.0.0.0/0</span></div>
+                <div class="c-ok">↳ would revoke public-wide 443 ingress</div>
+                <div><span class="c-prompt">$</span> cloud firewall <span class="c-flag">authorize-ingress</span> \</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-flag">--rule-id</span> <span class="c-str">fw-00f2a1c3b4d5e6789</span> \</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-flag">--protocol</span> tcp <span class="c-flag">--port</span> <span class="c-num">443</span> \</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-flag">--source</span> <span class="c-str">10.0.0.0/8</span></div>
+                <div class="c-ok">↳ would restore terraform-declared range</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       COMPARE — Why not the provider console
+       ============================================================ -->
+  <section class="compare" aria-labelledby="compare-h">
+    <div class="shell">
+      <div class="section-head">
+        <div class="eyebrow" data-reveal>Why not just the cloud console?</div>
+        <h2 id="compare-h" data-reveal style="--reveal-delay: 80ms">
+          The console is a service browser. RiftView is a graph.
+        </h2>
+      </div>
+
+      <div class="compare-grid" data-reveal>
+        <div class="compare-col">
+          <h4>Cloud Console</h4>
+          <ul>
+            <li>Organized by service silo &mdash; compute here, databases there, functions elsewhere</li>
+            <li>No cross-service relationships. Dependencies live in your head</li>
+            <li>Per-service dashboards. No whole-account graph</li>
+            <li>Cannot answer &ldquo;what breaks if this goes down?&rdquo;</li>
+            <li>Cannot compare live infrastructure to your Terraform state</li>
+            <li>Blast radius: four tabs and ten minutes of guessing</li>
+          </ul>
+        </div>
+        <div class="compare-col -rv">
+          <h4><span class="wordmark" aria-hidden="true" style="font-size: inherit"><span class="mark"></span></span> RiftView</h4>
+          <ul>
+            <li>Organized by connection &mdash; a single view, every service</li>
+            <li>Every cross-service edge, traced and live</li>
+            <li>One graph. Entire account. Always current</li>
+            <li>Click a node &mdash; blast radius on every resource, every time</li>
+            <li>Terraform drift, surfaced per resource with fix commands</li>
+            <li>Blast radius: one click, under ten seconds</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       HOW IT WORKS
+       ============================================================ -->
+  <section class="how section" id="how" aria-labelledby="how-h">
+    <div class="shell">
+      <div class="section-head">
+        <div class="eyebrow" data-reveal>How it works</div>
+        <h2 id="how-h" data-reveal style="--reveal-delay: 80ms">
+          Three steps. Real cloud. No mock data.
+        </h2>
+      </div>
+
+      <div class="steps">
+        <div class="step" data-reveal>
+          <div class="icn" aria-hidden="true">
+            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="5" y="9" width="26" height="18" rx="2"/>
+              <path d="M5 14h26M10 19h6M10 23h10"/>
+            </svg>
+          </div>
+          <h4>Select your cloud profile</h4>
+          <p>RiftView reads from your provider&rsquo;s local credentials file, environment variables, or an SSO session. Credentials stay local &mdash; read-only by default.</p>
+        </div>
+        <div class="step" data-reveal style="--reveal-delay: 120ms">
+          <div class="icn" aria-hidden="true">
+            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="18" cy="18" r="12"/>
+              <path d="M18 6v5M18 25v5M6 18h5M25 18h5M9.5 9.5l3.5 3.5M23 23l3.5 3.5M23 13l3.5-3.5M9.5 26.5L13 23"/>
+            </svg>
+          </div>
+          <h4>Hit Scan</h4>
+          <p>RiftView enumerates every service in parallel and assembles the graph. Typical account: 4 to 12 seconds. Large accounts: up to 30.</p>
+        </div>
+        <div class="step" data-reveal style="--reveal-delay: 240ms">
+          <div class="icn" aria-hidden="true">
+            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="11" cy="11" r="4"/>
+              <circle cx="25" cy="11" r="4"/>
+              <circle cx="18" cy="26" r="4"/>
+              <path d="M13.5 14l3 9M23 14l-4 9M14 11h8"/>
+            </svg>
+          </div>
+          <h4>Click any resource</h4>
+          <p>Instant blast radius. Top risks panel. Drift view. Remediation commands generated inline. This is the 2am workflow.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       DOWNLOAD
+       ============================================================ -->
+  <section class="download" id="download" aria-labelledby="download-h">
+    <div class="shell">
+      <div class="download-grid">
+        <div>
+          <div class="eyebrow" data-reveal>Download</div>
+          <h2 id="download-h" data-reveal style="--reveal-delay: 80ms">
+            Stop <span class="ember">context-</span>switching.
+          </h2>
+          <p data-reveal style="--reveal-delay: 160ms">
+            Point RiftView at your cloud profile. In thirty seconds you&rsquo;ll see what your infrastructure actually looks like.
+          </p>
+        </div>
+
+        <div class="download-box" data-reveal style="--reveal-delay: 240ms">
+          <span class="label">Available for</span>
+          <a href="https://github.com/rift-view/riftview/releases" target="_blank" rel="noopener" class="btn btn-primary dl-primary" data-dl-primary data-platform="macos">
+            <svg class="dl-icon dl-icon-macos" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width: 1.2em; height: 1.2em">
+              <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+            </svg>
+            <svg class="dl-icon dl-icon-windows" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width: 1.2em; height: 1.2em">
+              <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-13.051-1.801"/>
+            </svg>
+            <svg class="dl-icon dl-icon-linux" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width: 1.2em; height: 1.2em">
+              <path d="M12 2c-1.66 0-3 1.34-3 3 0 .42.08.82.23 1.18C7.93 7.14 7 8.95 7 11c0 1.02.23 1.98.64 2.83-.76.5-1.26 1.37-1.26 2.36 0 .77.31 1.46.8 1.97-.34.44-.56 1-.56 1.6 0 1.24 1.01 2.24 2.25 2.24h6.34c1.24 0 2.25-1 2.25-2.24 0-.6-.22-1.16-.56-1.6.49-.51.8-1.2.8-1.97 0-.99-.5-1.86-1.26-2.36.41-.85.64-1.81.64-2.83 0-2.05-.93-3.86-2.23-4.82.15-.36.23-.76.23-1.18 0-1.66-1.34-3-3-3zm-1.25 3c.41 0 .75.34.75.75s-.34.75-.75.75-.75-.34-.75-.75.34-.75.75-.75zm2.5 0c.41 0 .75.34.75.75s-.34.75-.75.75-.75-.34-.75-.75.34-.75.75-.75zM12 8c.83 0 1.58.34 2.12.89l-.98.32-1.14.65-1.14-.65-.98-.32C10.42 8.34 11.17 8 12 8z"/>
+            </svg>
+            <span class="dl-text" data-dl-text>Download · macOS</span>
+            <span class="mono dl-version" style="opacity: 0.7; margin-left: auto; font-size: 0.85em">v0.1.0</span>
+          </a>
+          <div class="also" data-dl-also>
+            <a href="https://github.com/rift-view/riftview/releases" target="_blank" rel="noopener" class="dl-alt" data-platform="macos">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/>
+              </svg>
+              <span>macOS</span>
+            </a>
+            <a href="https://github.com/rift-view/riftview/releases" target="_blank" rel="noopener" class="dl-alt" data-platform="windows">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-13.051-1.801"/>
+              </svg>
+              <span>Windows</span>
+            </a>
+            <a href="https://github.com/rift-view/riftview/releases" target="_blank" rel="noopener" class="dl-alt" data-platform="linux">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2c-1.66 0-3 1.34-3 3 0 .42.08.82.23 1.18C7.93 7.14 7 8.95 7 11c0 1.02.23 1.98.64 2.83-.76.5-1.26 1.37-1.26 2.36 0 .77.31 1.46.8 1.97-.34.44-.56 1-.56 1.6 0 1.24 1.01 2.24 2.25 2.24h6.34c1.24 0 2.25-1 2.25-2.24 0-.6-.22-1.16-.56-1.6.49-.51.8-1.2.8-1.97 0-.99-.5-1.86-1.26-2.36.41-.85.64-1.81.64-2.83 0-2.05-.93-3.86-2.23-4.82.15-.36.23-.76.23-1.18 0-1.66-1.34-3-3-3zm-1.25 3c.41 0 .75.34.75.75s-.34.75-.75.75-.75-.34-.75-.75.34-.75.75-.75zm2.5 0c.41 0 .75.34.75.75s-.34.75-.75.75-.75-.34-.75-.75.34-.75.75-.75zM12 8c.83 0 1.58.34 2.12.89l-.98.32-1.14.65-1.14-.65-.98-.32C10.42 8.34 11.17 8 12 8z"/>
+              </svg>
+              <span>Linux</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="foot">
+    <div class="foot-grid">
+      <div class="foot-col">
+        <a href="#" class="wordmark" style="margin-bottom: var(--space-sm); display: inline-flex"><span class="mark"></span>RIFTVIEW</a>
+        <p>
+          The incident diagnostic layer for the cloud. Built by engineers who were tired of opening four tabs during an outage.
+        </p>
+      </div>
+      <div class="foot-col">
+        <h5>Product</h5>
+        <ul>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#how">How it works</a></li>
+          <li><a href="#download">Download</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Open source</h5>
+        <ul>
+          <li><a href="https://github.com/rift-view/riftview" target="_blank" rel="noopener">GitHub</a></li>
+          <li><a href="https://github.com/rift-view/riftview/issues" target="_blank" rel="noopener">Issues</a></li>
+          <li><a href="https://github.com/rift-view/riftview/releases" target="_blank" rel="noopener">Releases</a></li>
+          <li><a href="https://github.com/rift-view/riftview/blob/main/NOTICE.md" target="_blank" rel="noopener">NOTICE</a></li>
+        </ul>
+      </div>
+      <div class="foot-col">
+        <h5>Legal</h5>
+        <p>
+          RiftView is an independent tool. All cloud provider names and service marks referenced are trademarks of their respective owners.
+        </p>
+      </div>
+    </div>
+
+    <div class="foot-bottom">
+      <span>© 2026 RiftView · MIT</span>
+      <span>v0.1.0 · macOS · Windows · Linux</span>
+      <a href="https://github.com/rift-view/riftview" target="_blank" rel="noopener">rift-view/riftview ↗</a>
+    </div>
+  </footer>
+
+  <script src="scripts/graph.js" defer></script>
+  <script src="scripts/reveal.js" defer></script>
+  <script src="scripts/interactions.js" defer></script>
+</body>
+</html>

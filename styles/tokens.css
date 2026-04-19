@@ -1,0 +1,160 @@
+/* ============================================================
+   RIFTVIEW — DESIGN TOKENS
+   OKLCH palette, warm-tinted, incident-diagnostic aesthetic.
+   No pure black. No cyan-on-black. No AI-gradient cliché.
+   ============================================================ */
+
+:root {
+  /* ---------- PALETTE: WARM INK (surfaces + structure) ---------- */
+  /* All neutrals tinted toward brand hue 30° (warm brown/amber family)
+     so the UI reads as cohesive with the ember accent. */
+  --ink-1000: oklch(0.10 0.006 30);   /* deepest */
+  --ink-950:  oklch(0.13 0.008 30);   /* page base */
+  --ink-900:  oklch(0.17 0.009 30);   /* surface */
+  --ink-850:  oklch(0.20 0.010 30);   /* surface elevated */
+  --ink-800:  oklch(0.24 0.010 30);   /* hairline elevated */
+  --ink-700:  oklch(0.32 0.010 30);   /* borders, dim */
+  --ink-600:  oklch(0.42 0.012 30);   /* dim text on dark */
+  --ink-500:  oklch(0.52 0.012 30);   /* mid */
+
+  /* ---------- PALETTE: BONE (text, cream, warm off-white) ---------- */
+  --bone-50:   oklch(0.98 0.010 80);  /* headlines, max contrast */
+  --bone-100:  oklch(0.95 0.013 75);  /* body, primary text */
+  --bone-200:  oklch(0.86 0.016 75);  /* secondary text */
+  --bone-300:  oklch(0.72 0.018 70);  /* tertiary, labels */
+  --bone-400:  oklch(0.58 0.018 65);  /* dim, disabled */
+
+  /* ---------- PALETTE: EMBER (signature accent — alert amber) ---------- */
+  /* Color of a live warning light. On-brand for incident diagnostics.
+     Chroma is intentionally reduced at the extremes to avoid neon. */
+  --ember-300: oklch(0.86 0.100 60);
+  --ember-400: oklch(0.80 0.140 55);
+  --ember-500: oklch(0.73 0.170 50);  /* primary accent */
+  --ember-600: oklch(0.63 0.170 45);
+  --ember-700: oklch(0.52 0.150 40);
+  --ember-glow: oklch(0.73 0.170 50 / 0.18);
+
+  /* ---------- PALETTE: OXIDE (secondary — copper/bronze) ---------- */
+  --oxide-400: oklch(0.66 0.080 40);
+  --oxide-500: oklch(0.55 0.090 35);
+  --oxide-600: oklch(0.45 0.080 35);
+
+  /* ---------- PALETTE: FAULT (danger, critical risk) ---------- */
+  --fault-500: oklch(0.60 0.200 28);
+  --fault-glow: oklch(0.60 0.200 28 / 0.22);
+
+  /* ---------- PALETTE: MOSS (healthy, connected, drift-ok) ---------- */
+  /* Used only in the drift panel to show a good diff state. */
+  --moss-500: oklch(0.68 0.100 145);
+
+  /* ---------- SEMANTIC ASSIGNMENTS ---------- */
+  --bg:            var(--ink-950);
+  --bg-elev-1:     var(--ink-900);
+  --bg-elev-2:     var(--ink-850);
+  --fg:            var(--bone-100);
+  --fg-strong:     var(--bone-50);
+  --fg-muted:      var(--bone-300);
+  --fg-dim:        var(--bone-400);
+  --border:        var(--ink-700);
+  --border-strong: var(--ink-600);
+  --accent:        var(--ember-500);
+  --accent-soft:   var(--ember-glow);
+  --danger:        var(--fault-500);
+  --ok:            var(--moss-500);
+
+  /* ---------- TYPOGRAPHY: STACKS ----------
+     Display: Archivo Narrow — industrial condensed, newspaper signage
+     Body:    Libre Franklin — Franklin Gothic revival, American workhorse
+     Mono:    Fragment Mono — editorial monospace, not dev-tool default */
+  --font-display: "Archivo Narrow", "Helvetica Neue Condensed", "Helvetica Neue", system-ui, sans-serif;
+  --font-body:    "Libre Franklin", "Helvetica Neue", system-ui, sans-serif;
+  --font-mono:    "Fragment Mono", "Menlo", "SF Mono", ui-monospace, monospace;
+
+  /* ---------- TYPOGRAPHY: FLUID SCALE (1.333 ratio) ---------- */
+  --text-micro:    0.6875rem; /* 11px */
+  --text-xs:       0.75rem;   /* 12px */
+  --text-sm:       0.875rem;  /* 14px */
+  --text-base:     1rem;      /* 16px */
+  --text-lg:       1.125rem;  /* 18px */
+  --text-xl:       clamp(1.25rem, 0.5vw + 1.1rem, 1.5rem);
+  --text-2xl:      clamp(1.5rem, 1vw + 1.25rem, 2rem);
+  --text-3xl:      clamp(2rem, 2vw + 1.5rem, 2.75rem);
+  --text-4xl:      clamp(2.75rem, 3vw + 2rem, 4rem);
+  --text-display:  clamp(3.25rem, 5vw + 1.5rem, 6.5rem);
+  --text-mega:     clamp(4rem, 8vw + 1rem, 9rem);
+
+  /* ---------- TYPOGRAPHY: LEADING ---------- */
+  --leading-tight:    1.02;
+  --leading-snug:     1.14;
+  --leading-headline: 1.08;
+  --leading-body:     1.55;
+  --leading-loose:    1.75;
+
+  /* ---------- TYPOGRAPHY: TRACKING ----------
+     Archivo Narrow is already condensed, so tight tracking
+     is applied sparingly compared to a regular-width display. */
+  --tracking-mega:  -0.02em;
+  --tracking-tight: -0.01em;
+  --tracking-snug:  -0.005em;
+  --tracking-body:   0;
+  --tracking-label:  0.18em;
+  --tracking-loud:   0.24em;
+
+  /* ---------- SPACING (4pt base, semantic) ---------- */
+  --space-3xs: 0.25rem;   /*  4 */
+  --space-2xs: 0.5rem;    /*  8 */
+  --space-xs:  0.75rem;   /* 12 */
+  --space-sm:  1rem;      /* 16 */
+  --space-md:  1.5rem;    /* 24 */
+  --space-lg:  2rem;      /* 32 */
+  --space-xl:  3rem;      /* 48 */
+  --space-2xl: 4.5rem;    /* 72 */
+  --space-3xl: 6rem;      /* 96 */
+  --space-4xl: 9rem;      /* 144 */
+  --space-5xl: 12rem;     /* 192 */
+
+  /* ---------- RADII ---------- */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 14px;
+  --radius-pill: 999px;
+
+  /* ---------- LAYOUT ---------- */
+  --max-container:  78rem;   /* 1248px */
+  --max-measure:    62ch;    /* long-form copy */
+  --max-narrow:     44rem;   /* tight editorial */
+  --gutter:         clamp(1.25rem, 3vw, 2.5rem);
+  --rail-pad:       clamp(1.5rem, 4vw, 4.5rem);
+
+  /* ---------- MOTION ---------- */
+  --ease-out:     cubic-bezier(0.16, 1, 0.3, 1);   /* quart */
+  --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1); /* quint subtle */
+  --ease-in-out:  cubic-bezier(0.83, 0, 0.17, 1);
+  --ease-swift:   cubic-bezier(0.4, 0, 0.2, 1);
+
+  --dur-instant:  60ms;
+  --dur-fast:     160ms;
+  --dur-med:      320ms;
+  --dur-slow:     620ms;
+  --dur-reveal:   1100ms;
+  --dur-epic:     1800ms;
+
+  /* ---------- LAYERS ---------- */
+  --z-behind: -1;
+  --z-base:   0;
+  --z-raise:  10;
+  --z-sticky: 50;
+  --z-overlay: 100;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-instant: 0ms;
+    --dur-fast:    0ms;
+    --dur-med:     0ms;
+    --dur-slow:    0ms;
+    --dur-reveal:  0ms;
+    --dur-epic:    0ms;
+  }
+}
