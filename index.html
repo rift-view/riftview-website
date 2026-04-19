@@ -13,7 +13,15 @@
   <meta property="og:title" content="RiftView — The cloud incident diagnostic layer" />
   <meta property="og:description" content="One live graph of your entire cloud account. Blast radius in one click. Drift detection against Terraform. Guided remediation." />
   <meta property="og:type" content="website" />
-  <meta property="og:image" content="assets/riftview-logo.jpg" />
+  <meta property="og:image" content="assets/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="RiftView — the diagnostic layer your cloud doesn't have." />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="RiftView — The cloud incident diagnostic layer" />
+  <meta name="twitter:description" content="One live graph of your entire cloud account. Blast radius in one click." />
+  <meta name="twitter:image" content="assets/og-image.jpg" />
 
   <link rel="icon" type="image/jpeg" href="assets/riftview-logo.jpg" />
 
@@ -75,7 +83,7 @@
             The diagnostic layer your cloud <span class="ember">doesn&rsquo;t</span> have.
           </h1>
           <p class="lede" data-reveal style="--reveal-delay: 160ms">
-            Scan your architecture in one pass. See every cross-service dependency as a live graph. Click any resource &mdash; know in 10 seconds what else breaks if it fails.
+            Scan your architecture in one pass. See every cross-service dependency as a live graph. Click any resource &mdash; know in under 30 seconds what else breaks if it fails.
           </p>
           <div class="hero-cta" data-reveal style="--reveal-delay: 240ms">
             <a href="#download" class="btn btn-primary" data-hero-cta>
@@ -177,11 +185,11 @@
     <div class="shell">
       <div class="eyebrow" data-reveal>The answer</div>
       <h2 id="answer-h" class="answer-mega" data-reveal style="--reveal-delay: 80ms">
-        RiftView answers it <span class="ember">in&nbsp;ten seconds</span>.
+        RiftView answers it <span class="ember">in&nbsp;30 seconds</span>.
       </h2>
       <div class="answer-timer" data-reveal style="--reveal-delay: 240ms">
-        <span class="num" data-count="10">00</span>
-        <span>seconds · full architecture scan → blast radius visible</span>
+        <span class="num" data-count="30">00 </span>
+        <span> seconds · full architecture scan → blast radius visible</span>
       </div>
     </div>
   </section>
@@ -316,7 +324,7 @@
         <div class="grid-split -reverse">
           <div data-reveal>
             <div class="feature-num"><b>04</b> &nbsp;/&nbsp; Drift detection</div>
-            <h3 style="max-width: none; white-space: nowrap">Your IaC.<br>Your current deployment.<br><span class="ember">A clean diff.</span></h3>
+            <h3 class="drift-h3">Your IaC.<br>Your current deployment.<br><span class="ember">A clean diff.</span></h3>
             <p>
               RiftView compares your current deployment against your state file. Changes that happened outside your IaC &mdash; console clicks, one-off CLI fixes &mdash; show up as diff lines with the fix commands ready to run.
             </p>
@@ -425,7 +433,7 @@
             <li>One graph. Entire account. Always current</li>
             <li>Click a node &mdash; blast radius on every resource, every time</li>
             <li>Terraform drift, surfaced per resource with fix commands</li>
-            <li>Blast radius: one click, under ten seconds</li>
+            <li>Blast radius: one click, under 30 seconds</li>
           </ul>
         </div>
       </div>
@@ -494,7 +502,7 @@
             Stop <span class="ember">context-</span>switching.
           </h2>
           <p data-reveal style="--reveal-delay: 160ms">
-            Point RiftView at your cloud profile. In thirty seconds you&rsquo;ll see what your infrastructure actually looks like.
+            Point RiftView at your cloud profile. In 30 seconds you&rsquo;ll see what your infrastructure actually looks like.
           </p>
         </div>
 

@@ -15,8 +15,8 @@
 
 .hero-grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: clamp(2.5rem, 4vw, 5rem);
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(2rem, 4vw, 5rem);
   align-items: center;
   position: relative;
 }
@@ -526,7 +526,7 @@
 }
 .compare-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: 1px;
   background: var(--ink-800);
   border: 1px solid var(--ink-800);
@@ -534,7 +534,7 @@
   overflow: hidden;
 }
 @media (min-width: 56rem) {
-  .compare-grid { grid-template-columns: 1fr 1fr; }
+  .compare-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
 }
 .compare-col { background: var(--ink-900); padding: var(--space-lg); }
 .compare-col.-rv {
@@ -580,12 +580,12 @@
 }
 .steps {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-lg);
   counter-reset: step;
 }
 @media (min-width: 56rem) {
-  .steps { grid-template-columns: repeat(3, 1fr); gap: var(--space-xl); }
+  .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-xl); }
 }
 .step {
   counter-increment: step;
@@ -632,13 +632,13 @@
 
 .specs {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-xl);
   padding-block: clamp(3rem, 7vw, 5rem);
   border-top: 1px solid var(--ink-800);
 }
 @media (min-width: 56rem) {
-  .specs { grid-template-columns: 1fr 1fr 1fr; gap: var(--space-2xl); }
+  .specs { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-2xl); }
 }
 .spec h4 {
   font-family: var(--font-mono);
@@ -712,11 +712,11 @@
 .download-grid {
   display: grid;
   gap: var(--space-xl);
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   align-items: end;
 }
 @media (min-width: 56rem) {
-  .download-grid { grid-template-columns: 1.2fr 1fr; }
+  .download-grid { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
 }
 
 .download h2 {
@@ -791,13 +791,13 @@
 }
 .foot-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-xl);
   max-width: var(--max-container);
   margin-inline: auto;
 }
 @media (min-width: 56rem) {
-  .foot-grid { grid-template-columns: 1.5fr 1fr 1fr 1.2fr; }
+  .foot-grid { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.2fr); }
 }
 .foot-col h5 {
   font-family: var(--font-mono);
@@ -850,4 +850,236 @@
 
 @media (prefers-reduced-motion: reduce) {
   .js-enhanced [data-reveal] { opacity: 1; transform: none; transition: none; }
+}
+
+/* ============================================================
+   MOBILE TUNING (≤ 48rem / 768px)
+   Corrects proportions, density, and overflow for phones.
+   ============================================================ */
+
+@media (max-width: 48rem) {
+  /* --- Hero ------------------------------------------------- */
+  .hero {
+    padding-top: clamp(5rem, 16vw, 7rem);
+    padding-bottom: clamp(2rem, 6vh, 4rem);
+    min-height: auto;
+  }
+
+  /* Register marks collide on narrow screens — mute visually, keep one */
+  .register-tr { display: none; }
+  .register-tl {
+    top: calc(var(--space-sm) + 3.5rem);
+    font-size: 0.625rem;
+    opacity: 0.7;
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(2.5rem, 11vw, 3.25rem);
+    letter-spacing: -0.015em;
+    line-height: 1.02;
+  }
+  .hero-copy h1 .ember { letter-spacing: -0.01em; }
+
+  .hero-copy .lede {
+    font-size: 1.0625rem;
+    line-height: 1.5;
+  }
+
+  /* Stack CTAs, make them full-width, hit 44px touch target */
+  .hero-cta { gap: var(--space-xs); }
+  .hero-cta .btn {
+    flex: 1 1 auto;
+    justify-content: center;
+    padding: 0.95rem 1.125rem;
+    min-height: 44px;
+    font-size: 0.9375rem;
+  }
+
+  /* Hero meta on phone — 2 columns, tighter gap */
+  .hero-meta {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-sm) var(--space-md);
+    padding-top: var(--space-sm);
+  }
+  .hero-meta .v { font-size: 0.8125rem; }
+
+  /* Graph — smaller, breathes less, keeps the motif */
+  .hero-graph {
+    min-height: 0;
+    aspect-ratio: 4 / 3;
+    max-width: 100%;
+  }
+
+  /* Captions on tiny graph look cramped — hide on phone */
+  .graph-caption { display: none; }
+
+  .scroll-cue { display: none; }
+
+  /* --- Problem / Tabs -------------------------------------- */
+  .problem-lede { font-size: clamp(2rem, 8vw, 2.5rem); max-width: 18ch; }
+  .problem-body { font-size: 1rem; }
+
+  .tabs-stack {
+    min-height: 300px;
+    margin-top: var(--space-md);
+    margin-inline: var(--space-sm);
+  }
+  /* Reduce the cantilever so rotated tabs don't push into the gutter */
+  .tab-window.-t1 { transform: rotate(-2deg) translateX(-4px); }
+  .tab-window.-t2 { transform: rotate(1deg)  translateX(4px); top: 42px; }
+  .tab-window.-t3 { transform: rotate(-0.4deg) translateX(-2px); top: 84px; }
+  .tab-window.-t4 { transform: rotate(1.6deg) translateX(6px); top: 126px; }
+  .tab-window .chrome .url { font-size: 0.625rem; }
+  .tabs-badge { right: 2px; top: -8px; transform: rotate(4deg) scale(0.9); }
+
+  /* --- Answer ---------------------------------------------- */
+  .answer-mega {
+    font-size: clamp(3rem, 14vw, 4.5rem);
+    line-height: 0.96;
+    max-width: 14ch;
+  }
+  .answer-timer {
+    font-size: 0.875rem;
+    margin-top: var(--space-md);
+    flex-wrap: wrap;
+  }
+  .answer-timer .num { font-size: 2.25rem; }
+
+  /* --- Features -------------------------------------------- */
+  .section-head { margin-bottom: var(--space-xl); }
+  .section-head h2 { font-size: clamp(2rem, 8vw, 2.5rem); }
+  .section-head .lede { font-size: 1rem; }
+
+  .feature { padding-block: var(--space-xl); }
+  .feature h3 {
+    font-size: clamp(1.625rem, 6.5vw, 2rem);
+    max-width: none;
+    line-height: 1.1;
+  }
+  .feature p { font-size: 1rem; }
+  .feature-stat { margin-top: var(--space-md); padding-top: var(--space-sm); }
+  .feature-stat .big { font-size: clamp(1.5rem, 6vw, 2rem); }
+  .feature-stat .cap { font-size: 0.625rem; }
+
+  /* Feature 04 heading was forced nowrap inline — allow wrapping now */
+  .drift-h3 { max-width: none; }
+
+  .feature-demo {
+    min-height: 0;
+    padding: var(--space-xs);
+    border-radius: var(--radius-lg);
+  }
+  .feature-demo .demo-head {
+    font-size: 0.5625rem;
+    padding-bottom: var(--space-2xs);
+    margin-bottom: var(--space-xs);
+    flex-wrap: wrap;
+    gap: var(--space-3xs);
+  }
+
+  /* Code blocks — smaller, allow horizontal scroll rather than clip text */
+  .term, .diff {
+    font-size: 0.75rem;
+  }
+  .term-body, .diff-body {
+    padding: var(--space-sm) var(--space-xs);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .term-body > div, .diff-body .line {
+    white-space: nowrap;
+  }
+
+  /* Account-scan log inside features — compact */
+  .feature-demo > .term-body {
+    font-size: 0.75rem;
+    line-height: 1.55;
+    padding: var(--space-sm);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .feature-demo > .term-body > div { white-space: nowrap; }
+
+  /* Risk rows — stack body on very narrow; keep sev + arrow */
+  .risk { gap: var(--space-xs); padding: var(--space-sm) var(--space-xs); }
+  .risk .body .t { font-size: 0.8125rem; }
+  .risk .body .s { font-size: 0.625rem; }
+
+  /* Diff heading ellipsis protection */
+  .diff-head {
+    font-size: 0.5625rem;
+    padding: 0.5rem 0.625rem;
+    gap: var(--space-xs);
+  }
+  .diff-head > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0;
+  }
+
+  /* --- Compare --------------------------------------------- */
+  .compare-col { padding: var(--space-md); }
+  .compare-col h4 { font-size: 1.125rem; }
+  .compare-col li { font-size: 0.875rem; }
+
+  /* --- How ------------------------------------------------- */
+  .step { padding: var(--space-md) 0 var(--space-sm); }
+  .step h4 { font-size: 1.125rem; }
+  .step p { font-size: 0.9375rem; }
+
+  /* --- Download -------------------------------------------- */
+  .download { padding-block: clamp(3.5rem, 12vw, 6rem); }
+  .download h2 {
+    font-size: clamp(2.75rem, 13vw, 4rem);
+    line-height: 0.94;
+    max-width: 10ch;
+    /* allow word breaks so "context-switching" can wrap cleanly */
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  .download p { font-size: 1rem; }
+  .download-box { padding: var(--space-md); }
+  .download-box .btn-primary {
+    padding-block: 0.95rem;
+    font-size: 0.9375rem;
+    min-height: 48px;
+    flex-wrap: wrap;
+  }
+  .download-box .btn-primary .dl-version {
+    display: none;
+  }
+  .download-box .also {
+    flex-wrap: wrap;
+    gap: var(--space-xs) var(--space-sm);
+    font-size: 0.6875rem;
+  }
+
+  /* --- Footer --------------------------------------------- */
+  .foot { padding: var(--space-xl) var(--gutter) var(--space-md); }
+  .foot-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2xs);
+    margin-top: var(--space-xl);
+  }
+
+  /* --- Section padding ------------------------------------- */
+  .section { padding-block: clamp(2.5rem, 9vw, 5rem); }
+
+  /* --- Nav ------------------------------------------------- */
+  .nav { padding: 0.625rem var(--gutter); }
+  .nav-end .btn-primary { padding: 0.625rem 0.875rem; font-size: 0.8125rem; }
+  .wordmark { font-size: 1rem; }
+  .wordmark .mark { width: 1.6em; height: 1.6em; }
+}
+
+/* Very narrow phones — additional clamp for sub-375 devices */
+@media (max-width: 24rem) {
+  .hero-copy h1 { font-size: clamp(2.25rem, 10.5vw, 2.75rem); }
+  .answer-mega { font-size: clamp(2.75rem, 13vw, 4rem); }
+  .download h2 { font-size: clamp(2.5rem, 12vw, 3.5rem); }
+  .tabs-stack { margin-inline: 0; }
+  .hero-cta { flex-direction: column; align-items: stretch; }
+  .hero-cta .btn { width: 100%; }
 }
