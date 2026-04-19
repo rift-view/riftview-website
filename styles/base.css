@@ -1,0 +1,148 @@
+/* ============================================================
+   BASE — reset, root, typography foundation
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+* { margin: 0; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  -moz-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  tab-size: 4;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: var(--leading-body);
+  font-feature-settings: "ss01", "ss02", "cv11", "kern";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+  /* Subtle warm vignette from a deep ember glow top-left and a
+     cooler vacuum bottom-right — very low opacity, feels like room light */
+  background:
+    radial-gradient(ellipse at 8% -10%, oklch(0.30 0.07 45 / 0.28), transparent 55%),
+    radial-gradient(ellipse at 105% 110%, oklch(0.20 0.04 25 / 0.30), transparent 60%),
+    var(--ink-950);
+  background-attachment: fixed;
+}
+
+img, svg, video, canvas { display: block; max-width: 100%; }
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+a { color: inherit; text-decoration: none; }
+
+/* ---------- TYPOGRAPHY DEFAULTS ---------- */
+
+.display, h1, h2 {
+  font-family: var(--font-display);
+  color: var(--fg-strong);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-headline);
+  font-feature-settings: "kern", "liga";
+}
+
+h1 { font-size: var(--text-display); letter-spacing: var(--tracking-mega); font-weight: 700; }
+h2 { font-size: var(--text-4xl); font-weight: 600; }
+h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  letter-spacing: var(--tracking-snug);
+  line-height: var(--leading-snug);
+  color: var(--fg-strong);
+}
+h4 {
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  font-weight: 600;
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-snug);
+  color: var(--fg-strong);
+}
+
+p {
+  max-width: var(--max-measure);
+  line-height: var(--leading-body);
+}
+
+/* ---------- UTILITIES ---------- */
+
+.mono {
+  font-family: var(--font-mono);
+  font-feature-settings: "ss01", "zero", "calt";
+  font-size: 0.92em;
+  letter-spacing: -0.01em;
+}
+
+.label {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-loud);
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  font-weight: 500;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2xs);
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-loud);
+  text-transform: uppercase;
+  color: var(--ember-400);
+  font-weight: 500;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 22px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.7;
+}
+
+.hairline { border: 0; border-top: 1px solid var(--border); }
+
+.focus-visible:focus-visible,
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--ember-500);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+::selection {
+  background: var(--ember-500);
+  color: var(--ink-950);
+}
+
+/* ---------- SCROLLBAR (webkit only, subtle) ---------- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--ink-800);
+  border: 2px solid var(--ink-950);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--ink-700); }

@@ -1,0 +1,127 @@
+/* ============================================================
+   LAYOUT — containers, rails, the rift seam
+   ============================================================ */
+
+.shell {
+  width: 100%;
+  max-width: var(--max-container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.shell-narrow {
+  width: 100%;
+  max-width: var(--max-narrow);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.section {
+  padding-block: clamp(3.5rem, 10vw, 9rem);
+  position: relative;
+}
+
+.section--tight  { padding-block: clamp(2.5rem, 6vw, 5rem); }
+.section--loose  { padding-block: clamp(5rem, 12vw, 12rem); }
+
+/* ---------- RIFT SEAM ----------
+   A diagonal fault-line motif. A thin hairline that runs through
+   certain sections — the product's metaphor made spatial. Used
+   rarely. Never decoratively. */
+.rift-seam {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background:
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      var(--ink-700) 15%,
+      var(--ember-700) 50%,
+      var(--ink-700) 85%,
+      transparent 100%
+    );
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.rift-seam::after {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 52px;
+  background: var(--ember-500);
+  box-shadow: 0 0 24px var(--ember-glow);
+  border-radius: 2px;
+  opacity: 0.85;
+}
+
+/* ---------- GRID PATTERNS ---------- */
+
+.grid-two {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-xl);
+}
+@container (min-width: 52rem), (min-width: 52rem) {
+  /* fallback */
+}
+@media (min-width: 56rem) {
+  .grid-two { grid-template-columns: 1fr 1fr; gap: var(--space-2xl); }
+}
+
+.grid-lead-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+}
+@media (min-width: 56rem) {
+  .grid-lead-body { grid-template-columns: 7rem 1fr; gap: var(--space-2xl); }
+}
+
+/* Asymmetric split — used for feature sections */
+.grid-split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-xl);
+}
+@media (min-width: 64rem) {
+  .grid-split {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    gap: var(--space-3xl);
+    align-items: center;
+  }
+  .grid-split.-reverse > :first-child { order: 2; }
+}
+
+/* Dotted register marks at the page edges — subtle trim-like rhythm */
+.register {
+  position: absolute;
+  color: var(--ink-700);
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-loud);
+}
+.register-tl { top: var(--space-md); left: var(--rail-pad); }
+.register-tr { top: var(--space-md); right: var(--rail-pad); text-align: right; }
+.register-bl { bottom: var(--space-md); left: var(--rail-pad); }
+.register-br { bottom: var(--space-md); right: var(--rail-pad); text-align: right; }
+
+/* ---------- SECTION HEADER PATTERN ---------- */
+.section-head {
+  display: grid;
+  gap: var(--space-md);
+  margin-bottom: var(--space-2xl);
+  max-width: 62rem;
+}
+.section-head h2 { max-width: 22ch; }
+.section-head .lede {
+  color: var(--fg-muted);
+  font-size: var(--text-lg);
+  line-height: var(--leading-body);
+  max-width: 52ch;
+}
