@@ -42,3 +42,6 @@ build/
 
 # Generated screenshots
 _screenshots/
+
+# Local Playwright capture helpers (machine-specific paths)
+scripts/capture_*
