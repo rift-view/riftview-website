@@ -18,6 +18,13 @@ window.__rvLowPower = (function () {
   return false;
 })();
 
+// Expose as a CSS hook so stylesheets can opt out of expensive compositing
+// effects (backdrop-filter, fixed backgrounds, big shadows) on devices that
+// can't afford them.
+try {
+  if (window.__rvLowPower) document.documentElement.classList.add("low-power");
+} catch (_) { /* ignore */ }
+
 (function () {
   "use strict";
 

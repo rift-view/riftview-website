@@ -204,7 +204,11 @@
   50%      { transform: scaleY(0.5); transform-origin: top; }
 }
 
-/* --- Backdrop grid / seismic lines --- */
+/* --- Backdrop grid / seismic lines ---
+   Desktop uses a radial mask to fade the grid out at the edges. On
+   mobile the mask-image promotes this element to its own compositor
+   layer that has to be re-rasterized on scroll, so we drop the mask
+   entirely there and let the grid run edge-to-edge at lower opacity. */
 .hero-backdrop {
   position: absolute;
   inset: 0;
@@ -215,9 +219,19 @@
     linear-gradient(to bottom, var(--ink-800) 1px, transparent 1px);
   background-size: clamp(40px, 5vw, 80px) clamp(40px, 5vw, 80px);
   background-position: center;
-  mask-image: radial-gradient(ellipse 75% 60% at 50% 40%, black, transparent 90%);
-  -webkit-mask-image: radial-gradient(ellipse 75% 60% at 50% 40%, black, transparent 90%);
-  opacity: 0.35;
+  opacity: 0.18;
+}
+@media (hover: hover) and (pointer: fine) and (min-width: 64rem) {
+  .hero-backdrop {
+    mask-image: radial-gradient(ellipse 75% 60% at 50% 40%, black, transparent 90%);
+    -webkit-mask-image: radial-gradient(ellipse 75% 60% at 50% 40%, black, transparent 90%);
+    opacity: 0.35;
+  }
+}
+.low-power .hero-backdrop {
+  mask-image: none;
+  -webkit-mask-image: none;
+  opacity: 0.14;
 }
 
 /* ================= PROBLEM ================= */
@@ -1082,4 +1096,46 @@
   .tabs-stack { margin-inline: 0; }
   .hero-cta { flex-direction: column; align-items: stretch; }
   .hero-cta .btn { width: 100%; }
+}
+
+/* ============================================================
+   MOBILE / LOW-POWER PAINT BUDGET
+   The visual effects below are visible on desktop but cause
+   per-frame paint cost on older Android. We trim them on touch
+   viewports and remove them entirely on devices that opted into
+   .low-power (set by scripts/graph.js via __rvLowPower).
+   ============================================================ */
+@media (pointer: coarse), (max-width: 48rem) {
+  /* Caption frosted-glass over the hero canvas — three of them, each
+     forcing a separate compositor layer. Solid background is enough. */
+  .graph-caption {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background: oklch(0.13 0.008 30 / 0.94);
+  }
+
+  /* Large soft drop-shadows: cut blur radius so the GPU doesn't have
+     to rasterize a giant blurred bitmap on every paint. */
+  .feature-demo { box-shadow: 0 12px 24px -16px oklch(0 0 0 / 0.5); }
+  .download-box { box-shadow: 0 12px 28px -16px oklch(0 0 0 / 0.6); }
+  .tab-window  { box-shadow: 0 8px 16px -10px oklch(0 0 0 / 0.5); }
+  .term        { box-shadow: 0 10px 24px -16px oklch(0 0 0 / 0.6); }
+  .pill .dot,
+  .pill-danger .dot,
+  .pill-ok .dot { box-shadow: none; }
+}
+
+/* Hard low-power path — no shadows or blurs on cards at all. */
+.low-power .feature-demo,
+.low-power .download-box,
+.low-power .tab-window,
+.low-power .term,
+.low-power .tabs-badge,
+.low-power .wordmark .mark {
+  box-shadow: none;
+}
+.low-power .graph-caption {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background: oklch(0.13 0.008 30 / 0.96);
 }

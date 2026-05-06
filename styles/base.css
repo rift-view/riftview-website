@@ -29,13 +29,20 @@ body {
   text-rendering: optimizeLegibility;
   overflow-x: hidden;
   /* Subtle warm vignette from a deep ember glow top-left and a
-     cooler vacuum bottom-right — very low opacity, feels like room light */
+     cooler vacuum bottom-right — very low opacity, feels like room light.
+     `background-attachment: fixed` is gated on hover-capable / large
+     viewports only — on mobile (and especially older Android) it forces
+     the browser to repaint both radial gradients on every scroll frame,
+     which is the dominant scroll-perf cost on the page. */
   background:
     radial-gradient(ellipse at 8% -10%, oklch(0.30 0.07 45 / 0.28), transparent 55%),
     radial-gradient(ellipse at 105% 110%, oklch(0.20 0.04 25 / 0.30), transparent 60%),
     var(--ink-950);
-  background-attachment: fixed;
 }
+@media (hover: hover) and (pointer: fine) and (min-width: 64rem) {
+  body { background-attachment: fixed; }
+}
+.low-power body { background-attachment: scroll; }
 
 img, svg, video, canvas { display: block; max-width: 100%; }
 
