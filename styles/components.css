@@ -178,13 +178,15 @@
   width: 1.8em;
   height: 1.8em;
   border-radius: 0.32em;
-  background-image: url("../assets/riftview-logo.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  /* CSS-painted mark — replaces a 168 KB JPG that was being decoded
+     for a 28 px element (twice per page). The gradient + diagonal
+     fault line carries the same brand cue at zero decode/memory cost. */
+  background:
+    linear-gradient(135deg, transparent 46%, oklch(0.95 0.013 75 / 0.9) 48%, oklch(0.95 0.013 75 / 0.9) 52%, transparent 54%),
+    linear-gradient(135deg, oklch(0.62 0.16 48), oklch(0.42 0.10 38));
   flex-shrink: 0;
-  /* Subtle inner hairline so the logo's rounded-square silhouette
-     reads as intentional against the dark surface, not clipped. */
+  /* Subtle inner hairline so the rounded-square silhouette reads as
+     intentional against the dark surface, not clipped. */
   box-shadow:
     inset 0 0 0 1px oklch(0.35 0.05 45 / 0.5),
     0 2px 12px -4px oklch(0.73 0.17 50 / 0.15);

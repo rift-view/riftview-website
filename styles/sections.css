@@ -1139,3 +1139,38 @@
   -webkit-backdrop-filter: none;
   background: oklch(0.13 0.008 30 / 0.96);
 }
+
+/* ------------------------------------------------------------
+   content-visibility: auto
+   The single biggest mobile-scroll win for a long single-page
+   site. Tells the browser it can skip layout, paint, and style
+   for sections that aren't in the viewport. Browsers without
+   support (older Chrome, all old WebKit) ignore the property.
+   contain-intrinsic-size reserves vertical space so scrollbar
+   position stays stable as sections materialize.
+
+   The hero is intentionally excluded — it's always above the
+   fold so contain-visibility would just add overhead.
+   ------------------------------------------------------------ */
+.problem,
+.answer,
+.section#features,
+.compare,
+.how,
+.download,
+.foot {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 800px;
+}
+
+/* ------------------------------------------------------------
+   Touch-only: silence infinite CSS animations.
+   These keep their compositing layers live forever even when
+   off-screen, which costs continuous repaints on older Android.
+   ------------------------------------------------------------ */
+@media (pointer: coarse), (max-width: 48rem) {
+  .pill .dot,
+  .pill-danger .dot,
+  .pill-ok .dot { animation: none; }
+  .scroll-cue .bar { animation: none; }
+}
