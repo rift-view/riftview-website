@@ -27,7 +27,11 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  /* `clip` is a cheaper version of `hidden` — it suppresses the same
+     overflow without forcing a new scroll container. Falls back to
+     `hidden` automatically on browsers that don't recognize it. */
   overflow-x: hidden;
+  overflow-x: clip;
   /* Subtle warm vignette from a deep ember glow top-left and a
      cooler vacuum bottom-right — very low opacity, feels like room light.
      `background-attachment: fixed` is gated on hover-capable / large
@@ -153,3 +157,20 @@ button:focus-visible {
   border-radius: 6px;
 }
 ::-webkit-scrollbar-thumb:hover { background: var(--ink-700); }
+
+/* ---------- MOBILE TEXT-RENDER BUDGET ----------
+   `text-rendering: optimizeLegibility` enables full kerning and
+   ligature lookups on every text node. On older Android GPUs this
+   pushes per-paint cost up enough to be felt on scroll. The OpenType
+   feature settings add per-glyph substitution work on top. We let
+   the browser pick its own defaults on touch / small viewports. */
+@media (pointer: coarse), (max-width: 48rem) {
+  body {
+    text-rendering: auto;
+    font-feature-settings: normal;
+  }
+}
+.low-power body {
+  text-rendering: auto;
+  font-feature-settings: normal;
+}
