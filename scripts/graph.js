@@ -4,6 +4,20 @@
    Canvas2D, no deps. Node layout is hand-placed for composition.
    ============================================================ */
 
+/* Shared low-power heuristics. Older Android phones report saveData,
+   coarse pointer, and low deviceMemory. We use this to throttle frame
+   rate and to skip the most expensive paint paths entirely. */
+window.__rvLowPower = (function () {
+  try {
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (conn && (conn.saveData || /(^|\b)(2g|slow-2g|3g)\b/.test(conn.effectiveType || ""))) return true;
+    if (typeof navigator.deviceMemory === "number" && navigator.deviceMemory <= 2) return true;
+    if (typeof navigator.hardwareConcurrency === "number" && navigator.hardwareConcurrency <= 4
+        && window.matchMedia("(pointer: coarse)").matches) return true;
+  } catch (_) { /* ignore */ }
+  return false;
+})();
+
 (function () {
   "use strict";
 
@@ -11,7 +25,8 @@
   if (!canvas) return;
 
   const ctx = canvas.getContext("2d");
-  const PR = Math.min(window.devicePixelRatio || 1, 2);
+  const lowPower = window.__rvLowPower;
+  const PR = Math.min(window.devicePixelRatio || 1, lowPower ? 1 : 2);
 
   /* ---------- PALETTE (matches CSS tokens) ---------- */
   const COLOR = {
@@ -92,6 +107,10 @@
 
   /* ---------- SIZING ---------- */
   let W = 0, H = 0;
+  // Cached gradient sprites — rebuilt only on resize, not per frame.
+  let hotGlowSprite = null;     // pre-rendered radial glow for the hot node
+  let hotNodeFill = null;       // linear gradient for hot node body
+  let hotGlowSize = 0;          // px radius the sprite was rendered at
 
   function resize() {
     const r = canvas.getBoundingClientRect();
@@ -103,6 +122,38 @@
     canvas.width  = Math.round(W * PR);
     canvas.height = Math.round(H * PR);
     ctx.setTransform(PR, 0, 0, PR, 0, 0);
+    rebuildSprites();
+  }
+
+  /* Pre-render the hot node glow once into an offscreen canvas. Drawing
+     this as an image each frame is ~10x cheaper than radial gradient +
+     shadowBlur on older Android GPUs. */
+  function rebuildSprites() {
+    const hot = nodeById["rds"];
+    const baseSize = 18 * (hot.size || 1);
+    const maxGlow = baseSize + 12 + 8; // matches glow upper bound below
+    hotGlowSize = Math.ceil(maxGlow * 2 + 8);
+    const off = document.createElement("canvas");
+    off.width = hotGlowSize;
+    off.height = hotGlowSize;
+    const oc = off.getContext("2d");
+    const cx = hotGlowSize / 2, cy = hotGlowSize / 2;
+    const grad = oc.createRadialGradient(cx, cy, baseSize * 0.4, cx, cy, maxGlow);
+    grad.addColorStop(0, COLOR.emberSoft);
+    grad.addColorStop(1, "oklch(0.73 0.170 50 / 0)");
+    oc.fillStyle = grad;
+    oc.beginPath();
+    oc.arc(cx, cy, maxGlow, 0, Math.PI * 2);
+    oc.fill();
+    hotGlowSprite = off;
+
+    // Linear fill gradient for the hot node body — cached, normalized
+    // (we'll redraw with a translate so this gradient always lines up).
+    const hotPx = baseSize;
+    const lg = ctx.createLinearGradient(-hotPx, -hotPx, hotPx, hotPx);
+    lg.addColorStop(0, "oklch(0.80 0.14 55)");
+    lg.addColorStop(1, "oklch(0.63 0.17 45)");
+    hotNodeFill = lg;
   }
 
   function coord(n) {
@@ -111,9 +162,14 @@
 
   /* ---------- ANIMATION STATE ---------- */
   let start = performance.now();
-  let pointer = null; // {x, y} in canvas space
-  let hoverNodeId = null;
   let needsRedraw = true;
+  let rafId = 0;
+  let running = false;
+  let visible = false;            // intersects viewport
+  let pageVisible = !document.hidden;
+  // Frame throttling on low-power: ~30fps instead of 60fps.
+  const minFrameMs = lowPower ? 33 : 0;
+  let lastFrameAt = 0;
 
   // Progress values for the reveal sequence
   const PHASE = {
@@ -158,8 +214,7 @@
       ctx.strokeStyle = COLOR.edgeHot;
       ctx.globalAlpha = 0.55;
       ctx.lineWidth = 1.35;
-      ctx.shadowColor = COLOR.emberSoft;
-      ctx.shadowBlur = 8;
+      // shadowBlur removed — pre-rendered glow sprite carries the warmth
     } else {
       ctx.strokeStyle = COLOR.edge;
       ctx.globalAlpha = 0.5;
@@ -176,15 +231,15 @@
     ctx.quadraticCurveTo(cx, cy, bx, by);
     ctx.stroke();
 
-    // Animated particle flowing along hot edges
-    if (isHot && drawTo >= 1 && pulsePhase !== undefined) {
+    // Animated particle flowing along hot edges — skip on low-power
+    if (isHot && drawTo >= 1 && pulsePhase !== undefined && !lowPower) {
       const flow = (pulsePhase + (Math.abs(a.x - 0.54) + Math.abs(a.y - 0.46)) * 0.4) % 1;
       const px = (1 - flow) * (1 - flow) * pa.x + 2 * (1 - flow) * flow * cx + flow * flow * pb.x;
       const py = (1 - flow) * (1 - flow) * pa.y + 2 * (1 - flow) * flow * cy + flow * flow * pb.y;
       ctx.globalAlpha = 0.85 * (1 - Math.abs(flow - 0.5) * 1.4);
       ctx.fillStyle = COLOR.ember;
-      ctx.shadowBlur = 14;
-      ctx.shadowColor = COLOR.ember;
+      // shadowBlur removed; the cached glow sprite under the hot node
+      // already provides the visual anchor for the flow particles.
       ctx.beginPath();
       ctx.arc(px, py, 1.8, 0, Math.PI * 2);
       ctx.fill();
@@ -205,16 +260,13 @@
     const isNeighbor = highlight.has(n.id) && !isHot;
     const isFaded = n.dim && !highlight.has(n.id);
 
-    // Outer glow for hot node
-    if (isHot) {
-      const glowSize = size + 12 + pulseAmt * 8;
-      const grad = ctx.createRadialGradient(p.x, p.y, size * 0.4, p.x, p.y, glowSize);
-      grad.addColorStop(0, COLOR.emberSoft);
-      grad.addColorStop(1, "oklch(0.73 0.170 50 / 0)");
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(p.x, p.y, glowSize, 0, Math.PI * 2);
-      ctx.fill();
+    // Outer glow for hot node — blit the pre-rendered sprite
+    // instead of building a radial gradient + fill every frame.
+    if (isHot && hotGlowSprite) {
+      const half = hotGlowSize / 2;
+      // Subtle pulse via globalAlpha so the sprite itself stays cached.
+      ctx.globalAlpha = 0.85 + pulseAmt * 0.15;
+      ctx.drawImage(hotGlowSprite, p.x - half, p.y - half);
     }
 
     // Rounded square card
@@ -223,17 +275,22 @@
 
     // Fill
     if (isHot) {
-      const g = ctx.createLinearGradient(p.x - size, p.y - size, p.x + size, p.y + size);
-      g.addColorStop(0, "oklch(0.80 0.14 55)");
-      g.addColorStop(1, "oklch(0.63 0.17 45)");
-      ctx.fillStyle = g;
+      // Translate so the cached gradient (centered at 0,0) aligns to the node.
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.fillStyle = hotNodeFill || "oklch(0.70 0.15 50)";
+      roundRect(ctx, -size / 2, -size / 2, size, size, r);
+      ctx.fill();
+      ctx.restore();
     } else if (isNeighbor) {
       ctx.fillStyle = "oklch(0.22 0.04 45)";
+      roundRect(ctx, p.x - size / 2, p.y - size / 2, size, size, r);
+      ctx.fill();
     } else {
       ctx.fillStyle = COLOR.nodeFill;
+      roundRect(ctx, p.x - size / 2, p.y - size / 2, size, size, r);
+      ctx.fill();
     }
-    roundRect(ctx, p.x - size / 2, p.y - size / 2, size, size, r);
-    ctx.fill();
 
     // Border
     ctx.lineWidth = 1;
@@ -308,9 +365,18 @@
 
   /* ---------- MAIN LOOP ---------- */
   function draw(now) {
+    rafId = 0;
+    if (!running) return;
+
+    // Frame throttle on low-power devices.
+    if (minFrameMs && now - lastFrameAt < minFrameMs) {
+      rafId = requestAnimationFrame(draw);
+      return;
+    }
+    lastFrameAt = now;
+
     ctx.clearRect(0, 0, W, H);
 
-    const pulseCycle = ((now - start) / 2800) % 1;
     const flowCycle = ((now - start) / 3400) % 1;
     const pulseAmt = 0.5 + 0.5 * Math.sin((now - start) / 600);
 
@@ -334,8 +400,23 @@
       drawNode(n, progress, pulseAmt, blastSet);
     }
 
-    needsRedraw = true;
-    requestAnimationFrame(draw);
+    rafId = requestAnimationFrame(draw);
+  }
+
+  function startLoop() {
+    if (running) return;
+    if (!visible || !pageVisible) return;
+    running = true;
+    lastFrameAt = 0;
+    rafId = requestAnimationFrame(draw);
+  }
+
+  function stopLoop() {
+    running = false;
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
   }
 
   /* ---------- INIT ---------- */
@@ -349,7 +430,29 @@
     }
     initialized = true;
     start = performance.now();
-    requestAnimationFrame(draw);
+    // Wire up visibility/page gating, then start.
+    setupGating();
+    if (visible && pageVisible) startLoop();
+  }
+
+  function setupGating() {
+    if (typeof IntersectionObserver !== "undefined") {
+      const io = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          visible = e.isIntersecting;
+          if (visible) startLoop();
+          else stopLoop();
+        }
+      }, { threshold: 0 });
+      io.observe(canvas);
+    } else {
+      visible = true;
+    }
+    document.addEventListener("visibilitychange", () => {
+      pageVisible = !document.hidden;
+      if (pageVisible && visible) startLoop();
+      else stopLoop();
+    });
   }
 
   window.addEventListener("resize", () => {
@@ -393,7 +496,8 @@
   if (!canvas) return;
 
   const ctx = canvas.getContext("2d");
-  const PR = Math.min(window.devicePixelRatio || 1, 2);
+  const lowPower = window.__rvLowPower;
+  const PR = Math.min(window.devicePixelRatio || 1, lowPower ? 1 : 2);
 
   // Mini node set — 1 hot + concentric dependents
   const HOT = { x: 0.50, y: 0.52, label: "DB", r: 26 };
@@ -412,6 +516,10 @@
   ];
 
   let W = 0, H = 0;
+  let hotGlowSprite = null;
+  let hotGlowSize = 0;
+  let hotFill = null;
+
   function resize() {
     const r = canvas.getBoundingClientRect();
     const parent = canvas.parentElement;
@@ -421,6 +529,30 @@
     canvas.width = W * PR;
     canvas.height = H * PR;
     ctx.setTransform(PR, 0, 0, PR, 0, 0);
+    rebuildSprites();
+  }
+
+  function rebuildSprites() {
+    const maxGlow = HOT.r + 22;
+    hotGlowSize = Math.ceil(maxGlow * 2 + 8);
+    const off = document.createElement("canvas");
+    off.width = hotGlowSize;
+    off.height = hotGlowSize;
+    const oc = off.getContext("2d");
+    const cx = hotGlowSize / 2, cy = hotGlowSize / 2;
+    const grad = oc.createRadialGradient(cx, cy, HOT.r * 0.5, cx, cy, maxGlow);
+    grad.addColorStop(0, "oklch(0.73 0.170 50 / 0.45)");
+    grad.addColorStop(1, "oklch(0.73 0.170 50 / 0)");
+    oc.fillStyle = grad;
+    oc.beginPath();
+    oc.arc(cx, cy, maxGlow, 0, Math.PI * 2);
+    oc.fill();
+    hotGlowSprite = off;
+
+    const lg = ctx.createLinearGradient(-HOT.r, -HOT.r, HOT.r, HOT.r);
+    lg.addColorStop(0, "oklch(0.80 0.14 55)");
+    lg.addColorStop(1, "oklch(0.63 0.17 45)");
+    hotFill = lg;
   }
 
   let start = performance.now();
@@ -439,24 +571,41 @@
     c.closePath();
   }
 
-  function drawNode(n, size, style, alpha) {
+  function drawNode(n, size, style, alpha, pulseAmt) {
     const x = n.x * W, y = n.y * H;
     ctx.save();
     ctx.globalAlpha = alpha;
     if (style === "hot") {
-      // glow
-      const glow = ctx.createRadialGradient(x, y, size * 0.5, x, y, size + 20);
-      glow.addColorStop(0, "oklch(0.73 0.170 50 / 0.45)");
-      glow.addColorStop(1, "oklch(0.73 0.170 50 / 0)");
-      ctx.fillStyle = glow;
-      ctx.beginPath(); ctx.arc(x, y, size + 20, 0, Math.PI * 2); ctx.fill();
+      // Cached glow sprite — no per-frame radial gradient.
+      if (hotGlowSprite) {
+        const half = hotGlowSize / 2;
+        ctx.globalAlpha = alpha * (0.85 + (pulseAmt || 0) * 0.15);
+        ctx.drawImage(hotGlowSprite, x - half, y - half);
+        ctx.globalAlpha = alpha;
+      }
 
-      const g = ctx.createLinearGradient(x - size, y - size, x + size, y + size);
-      g.addColorStop(0, "oklch(0.80 0.14 55)");
-      g.addColorStop(1, "oklch(0.63 0.17 45)");
-      ctx.fillStyle = g;
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.fillStyle = hotFill || "oklch(0.70 0.15 50)";
+      const r = size * 0.22;
+      roundRect(ctx, -size / 2, -size / 2, size, size, r);
+      ctx.fill();
       ctx.strokeStyle = "oklch(0.92 0.10 60)";
-    } else if (style === "on") {
+      ctx.lineWidth = 1.5;
+      roundRect(ctx, -size / 2, -size / 2, size, size, r);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.font = `600 ${Math.round(size * 0.36)}px "Fragment Mono", monospace`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "oklch(0.14 0.01 30)";
+      ctx.fillText(n.label, x, y);
+      ctx.restore();
+      return;
+    }
+
+    if (style === "on") {
       ctx.fillStyle = "oklch(0.24 0.04 45)";
       ctx.strokeStyle = "oklch(0.73 0.170 50)";
     } else {
@@ -466,14 +615,12 @@
     const r = size * 0.22;
     roundRect(ctx, x - size/2, y - size/2, size, size, r);
     ctx.fill();
-    ctx.lineWidth = style === "hot" ? 1.5 : 1;
+    ctx.lineWidth = 1;
     ctx.stroke();
     ctx.font = `600 ${Math.round(size * 0.36)}px "Fragment Mono", monospace`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillStyle = style === "hot" ? "oklch(0.14 0.01 30)" :
-                    style === "on"  ? "oklch(0.95 0.013 75)" :
-                                      "oklch(0.58 0.018 65)";
+    ctx.fillStyle = style === "on"  ? "oklch(0.95 0.013 75)" : "oklch(0.58 0.018 65)";
     ctx.fillText(n.label, x, y);
     ctx.restore();
   }
@@ -486,8 +633,7 @@
       ctx.strokeStyle = "oklch(0.73 0.170 50)";
       ctx.globalAlpha = 0.6;
       ctx.lineWidth = 1.3;
-      ctx.shadowColor = "oklch(0.73 0.170 50 / 0.4)";
-      ctx.shadowBlur = 6;
+      // shadowBlur removed
     } else {
       ctx.strokeStyle = "oklch(0.32 0.010 30)";
       ctx.globalAlpha = 0.4;
@@ -502,11 +648,22 @@
     ctx.restore();
   }
 
-  function loop(now) {
+  // The blast demo settles within ~2s. After that it's a static visual
+  // with only a subtle DB pulse. We render the static frame, then run
+  // the pulse only while visible — and we stop entirely on low-power.
+  let rafId = 0;
+  let running = false;
+  let visible = false;
+  let pageVisible = !document.hidden;
+  let introComplete = false;
+  const minFrameMs = lowPower ? 33 : 0;
+  let lastFrameAt = 0;
+
+  function renderFrame(now, withPulse) {
     ctx.clearRect(0, 0, W, H);
     const t = (now - start) / 1000;
     const progress = Math.min(1, t / 0.8);
-    const pulse = 0.5 + 0.5 * Math.sin(t * 2);
+    const pulse = withPulse ? (0.5 + 0.5 * Math.sin(t * 2)) : 0.5;
 
     // Ring2 edges first (cool)
     for (const r2 of RING2) {
@@ -516,25 +673,50 @@
       }, { d: Infinity, n: null }).n;
       if (nearest) drawEdge(r2, nearest, false, progress);
     }
-    // Ring1 edges (hot)
-    for (const r1 of RING1) {
-      drawEdge(r1, HOT, true, progress);
-    }
-
-    // Ring2 nodes (dim)
+    for (const r1 of RING1) drawEdge(r1, HOT, true, progress);
     for (const n of RING2) drawNode(n, 24, "off", progress);
-    // Ring1 nodes (hot neighbors)
     for (const n of RING1) drawNode(n, 30, "on", progress);
-    // Hot node with pulse
-    drawNode(HOT, HOT.r + pulse * 2, "hot", progress);
+    drawNode(HOT, HOT.r + pulse * 2, "hot", progress, pulse);
 
-    requestAnimationFrame(loop);
+    if (progress >= 1) introComplete = true;
+  }
+
+  function loop(now) {
+    rafId = 0;
+    if (!running) return;
+    if (minFrameMs && now - lastFrameAt < minFrameMs) {
+      rafId = requestAnimationFrame(loop);
+      return;
+    }
+    lastFrameAt = now;
+
+    renderFrame(now, !lowPower);
+
+    // On low-power, once the intro has completed, we do not need to keep
+    // animating the subtle pulse — stop the loop entirely.
+    if (lowPower && introComplete) {
+      running = false;
+      return;
+    }
+    rafId = requestAnimationFrame(loop);
+  }
+
+  function startLoop() {
+    if (running) return;
+    if (!visible || !pageVisible) return;
+    running = true;
+    lastFrameAt = 0;
+    rafId = requestAnimationFrame(loop);
+  }
+  function stopLoop() {
+    running = false;
+    if (rafId) { cancelAnimationFrame(rafId); rafId = 0; }
   }
 
   function init() {
     resize();
     start = performance.now();
-    requestAnimationFrame(loop);
+    if (visible && pageVisible) startLoop();
   }
 
   window.addEventListener("resize", resize);
@@ -544,16 +726,27 @@
     ro.observe(canvas.parentElement || canvas);
   }
 
-  // Start when visible so the animation plays as user scrolls in
+  // Visibility gating: only animate when the canvas is on screen.
   const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        start = performance.now();
-        io.disconnect();
+    for (const e of entries) {
+      const wasVisible = visible;
+      visible = e.isIntersecting;
+      if (visible && !wasVisible) {
+        // Re-trigger intro from this point if we haven't already played it.
+        if (!introComplete) start = performance.now();
+        startLoop();
+      } else if (!visible) {
+        stopLoop();
       }
-    });
+    }
   }, { threshold: 0.25 });
   io.observe(canvas);
+
+  document.addEventListener("visibilitychange", () => {
+    pageVisible = !document.hidden;
+    if (pageVisible && visible) startLoop();
+    else stopLoop();
+  });
 
   if (document.fonts && document.fonts.ready) {
     document.fonts.ready.then(init).catch(init);

@@ -74,24 +74,47 @@
   });
 
   /* ---------- SUBTLE CURSOR TILT ON HERO GRAPH ---------- */
-  // Reads mouse position near the graph and applies a tiny parallax transform
+  // Reads mouse position near the graph and applies a tiny parallax transform.
+  // Gated on a hover-capable, fine pointer so touch devices never run the
+  // RAF loop (it was previously animating compositor work indefinitely on
+  // phones, which never fire mousemove).
   const graph = document.querySelector(".hero-graph");
-  if (graph && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  const canHover = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (graph && canHover && !reducedMotion) {
     let rx = 0, ry = 0, tx = 0, ty = 0;
+    let active = false;
+    let rafId = 0;
     const maxTilt = 6;
+    const EPS = 0.01;
+
+    function frame() {
+      rx += (tx - rx) * 0.08;
+      ry += (ty - ry) * 0.08;
+      graph.style.transform = `perspective(1200px) rotateX(${rx}deg) rotateY(${ry}deg)`;
+      // Park the loop once we've settled and there's no active input.
+      if (!active && Math.abs(rx - tx) < EPS && Math.abs(ry - ty) < EPS) {
+        rafId = 0;
+        return;
+      }
+      rafId = requestAnimationFrame(frame);
+    }
+    function ensureRunning() {
+      if (!rafId) rafId = requestAnimationFrame(frame);
+    }
+    graph.addEventListener("mouseenter", () => { active = true; ensureRunning(); });
     graph.addEventListener("mousemove", (e) => {
       const r = graph.getBoundingClientRect();
       const mx = (e.clientX - r.left) / r.width - 0.5;
       const my = (e.clientY - r.top) / r.height - 0.5;
       tx = -my * maxTilt;
       ty =  mx * maxTilt;
+      ensureRunning();
     });
-    graph.addEventListener("mouseleave", () => { tx = 0; ty = 0; });
-    (function frame() {
-      rx += (tx - rx) * 0.08;
-      ry += (ty - ry) * 0.08;
-      graph.style.transform = `perspective(1200px) rotateX(${rx}deg) rotateY(${ry}deg)`;
-      requestAnimationFrame(frame);
-    })();
+    graph.addEventListener("mouseleave", () => {
+      active = false;
+      tx = 0; ty = 0;
+      ensureRunning();
+    });
   }
 })();
