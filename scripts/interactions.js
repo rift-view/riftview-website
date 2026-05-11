@@ -34,15 +34,16 @@
   }
 
   /* ---------- PLATFORM DETECTION — swap download CTAs to user's OS ---------- */
+  // Windows builds aren't shipped yet; Windows visitors fall back to macOS so
+  // the CTA still points at a real artifact.
   const detectOS = () => {
     const ua = (navigator.userAgent || "") + " " + (navigator.platform || "");
     if (/Mac|iPhone|iPad|iPod/i.test(ua)) return "macos";
-    if (/Win/i.test(ua)) return "windows";
     if (/Linux|X11|CrOS/i.test(ua)) return "linux";
     return "macos";
   };
   const os = detectOS();
-  const osLabel = { macos: "macOS", windows: "Windows", linux: "Linux" }[os];
+  const osLabel = { macos: "macOS", linux: "Linux" }[os];
 
   const primary = document.querySelector("[data-dl-primary]");
   if (primary) {
