@@ -255,7 +255,7 @@
               <span>account-scan.log</span>
               <span class="pill pill-ok"><span class="dot"></span>live</span>
             </div>
-            <div class="term-body" style="padding: 0 var(--space-2xs)">
+            <div class="term-body">
               <div><span class="c-prompt">scan&nbsp;›</span> <span class="c-str">"prod"</span> <span class="c-flag">--regions=primary,secondary</span></div>
               <div class="c-dim">discovering resources&hellip;</div>
               <div>compute &nbsp;<span class="c-num">142</span> instances   <span class="c-dim">→</span> <span class="c-num">38</span> firewall rules</div>
@@ -532,7 +532,7 @@
               <span>riftview · quick-start</span>
               <span class="pill pill-ok"><span class="dot"></span>read-only</span>
             </div>
-            <div class="term-body" style="padding: 0 var(--space-2xs)">
+            <div class="term-body">
               <div><span class="c-dim"># Full account scan, human-readable summary</span></div>
               <div><span class="c-prompt">$</span> riftview scan <span class="c-flag">--profile</span> <span class="c-str">prod</span></div>
               <div class="c-ok">✓ 47 services · 1,613 nodes · 4,807 edges · 8.2s</div>
@@ -572,7 +572,7 @@
               <span>snapshot → diff workflow</span>
               <span class="pill"><span class="dot"></span>2 runs, 1 diff</span>
             </div>
-            <div class="term-body" style="padding: 0 var(--space-2xs)">
+            <div class="term-body">
               <div><span class="c-dim"># Capture today's state</span></div>
               <div><span class="c-prompt">$</span> riftview scan <span class="c-flag">--snapshot</span> <span class="c-str">scan-$(date +%F).json</span></div>
               <div class="c-ok">✓ wrote scan-2026-05-11.json &nbsp;<span class="c-dim">2.1 MB</span></div>
@@ -613,7 +613,7 @@
               <span>.github/workflows/drift.yml</span>
               <span class="pill pill-ok"><span class="dot"></span>PR gate</span>
             </div>
-            <div class="term" style="border: none; box-shadow: none">
+            <div class="term">
               <div class="term-body">
                 <div><span class="c-dim">name:</span> <span class="c-str">Infra drift</span></div>
                 <div><span class="c-dim">on:</span></div>

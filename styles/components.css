@@ -255,6 +255,9 @@
   padding: var(--space-md);
   line-height: 1.7;
   color: var(--bone-200);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: -0.005em;
 }
 .term-body .c-prompt { color: var(--ember-400); }
 .term-body .c-flag   { color: var(--oxide-400); }
