@@ -826,6 +826,9 @@
 .foot-col a { color: var(--bone-200); font-size: var(--text-sm); transition: color var(--dur-fast) var(--ease-swift); }
 .foot-col a:hover { color: var(--ember-400); }
 .foot-col p { font-size: var(--text-xs); color: var(--fg-muted); line-height: 1.65; max-width: 30ch; }
+.foot-built { margin-top: var(--space-sm); color: var(--fg-dim); }
+.foot-built a { color: var(--bone-200); border-bottom: 1px solid var(--ink-700); padding-bottom: 1px; transition: color var(--dur-fast) var(--ease-swift), border-color var(--dur-fast) var(--ease-swift); }
+.foot-built a:hover { color: var(--ember-400); border-color: var(--ember-500); }
 
 .foot-bottom {
   display: flex;
