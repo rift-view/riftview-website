@@ -53,6 +53,7 @@
       <ul class="nav-links">
         <li><a href="#features">Features</a></li>
         <li><a href="#how">How it works</a></li>
+        <li><a href="#cli">CLI</a></li>
         <li><a href="https://github.com/rift-view/riftview" target="_blank" rel="noopener">GitHub ↗</a></li>
       </ul>
     </nav>
@@ -489,6 +490,164 @@
     </div>
   </section>
 
+
+  <!-- ============================================================
+       CLI — headless surface for CI
+       ============================================================ -->
+  <section class="section cli" id="cli" aria-labelledby="cli-h">
+    <div class="shell">
+      <div class="section-head">
+        <div class="eyebrow" data-reveal>Headless · @riftview/cli</div>
+        <h2 id="cli-h" data-reveal style="--reveal-delay: 80ms">
+          Also ships as a CLI <span class="ember">for CI</span>.
+        </h2>
+        <p class="lede" data-reveal style="--reveal-delay: 160ms">
+          Same scanner. Same analysis. Stable JSON, deterministic exit codes, no Electron runtime. Published as <code class="cli-pkg">@riftview/cli</code> on npm.
+        </p>
+      </div>
+
+      <!-- CLI 01 — Headless pitch + quick start -->
+      <article class="feature">
+        <div class="grid-split">
+          <div data-reveal>
+            <div class="feature-num"><b>01</b> &nbsp;/&nbsp; Headless</div>
+            <h3>Single Node bundle. <span class="ember">No desktop runtime.</span></h3>
+            <p>
+              Every subcommand uses the cloud SDK in read mode &mdash; write operations stay in the desktop app. Output is pinned to <span class="mono">schemaVersion: 1</span>; any breaking change bumps the version.
+            </p>
+            <div class="cli-pitch-grid">
+              <div><span class="k">Read-only</span><span class="v">No write ops</span></div>
+              <div><span class="k">Stable JSON</span><span class="v">schemaVersion: 1</span></div>
+              <div><span class="k">Exits</span><span class="v">Deterministic 0/1/2/3/4</span></div>
+              <div><span class="k">Runtime</span><span class="v">Node 20+, no Electron</span></div>
+            </div>
+            <div class="cli-install">
+              <span class="k">Install</span>
+              <code><span class="c-prompt">$</span> npm install <span class="c-flag">-g</span> <span class="c-str">@riftview/cli</span></code>
+            </div>
+          </div>
+
+          <div class="feature-demo" data-reveal style="--reveal-delay: 120ms">
+            <div class="demo-head">
+              <span>riftview · quick-start</span>
+              <span class="pill pill-ok"><span class="dot"></span>read-only</span>
+            </div>
+            <div class="term-body" style="padding: 0 var(--space-2xs)">
+              <div><span class="c-dim"># Full account scan, human-readable summary</span></div>
+              <div><span class="c-prompt">$</span> riftview scan <span class="c-flag">--profile</span> <span class="c-str">prod</span></div>
+              <div class="c-ok">✓ 47 services · 1,613 nodes · 4,807 edges · 8.2s</div>
+              <div>&nbsp;</div>
+              <div><span class="c-dim"># Fail CI on warnings or worse</span></div>
+              <div><span class="c-prompt">$</span> riftview risks <span class="c-flag">--profile</span> <span class="c-str">prod</span> <span class="c-flag">--fail-on</span> <span class="c-str">S2</span></div>
+              <div>&nbsp;</div>
+              <div><span class="c-dim"># Compare live infra against Terraform</span></div>
+              <div><span class="c-prompt">$</span> riftview drift <span class="c-flag">--state</span> <span class="c-str">terraform.tfstate</span> \</div>
+              <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-flag">--fail-on-drift</span></div>
+              <div class="c-err">✗ 2 resources drifted &nbsp;<span class="c-dim">exit 1</span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- CLI 02 — Commands + snapshot/diff workflow -->
+      <article class="feature">
+        <div class="grid-split -reverse">
+          <div data-reveal>
+            <div class="feature-num"><b>02</b> &nbsp;/&nbsp; Five subcommands</div>
+            <h3>Each does <span class="ember">one thing</span>. Pipes to <span class="mono">jq</span>.</h3>
+            <p>
+              Composable building blocks for CI pipelines: capture a snapshot once, gate risks and drift off it, diff against yesterday&rsquo;s scan to see what changed.
+            </p>
+            <ul class="cli-cmd-list">
+              <li><code>scan</code><span>Full account scan. Optional <span class="mono">--snapshot</span> writes JSON for later runs.</span></li>
+              <li><code>risks</code><span>Severity-sorted findings. <span class="mono">--fail-on S1|S2|S3</span> gates CI.</span></li>
+              <li><code>drift</code><span>Compare live infra to <span class="mono">terraform.tfstate</span>. <span class="mono">--fail-on-drift</span> trips on any change.</span></li>
+              <li><code>diff</code><span>Structurally diff two snapshots. Added, removed, field-level changes.</span></li>
+              <li><code>version</code><span>Build metadata: semver, git commit, build date, Node version.</span></li>
+            </ul>
+          </div>
+
+          <div class="feature-demo" data-reveal style="--reveal-delay: 120ms">
+            <div class="demo-head">
+              <span>snapshot → diff workflow</span>
+              <span class="pill"><span class="dot"></span>2 runs, 1 diff</span>
+            </div>
+            <div class="term-body" style="padding: 0 var(--space-2xs)">
+              <div><span class="c-dim"># Capture today's state</span></div>
+              <div><span class="c-prompt">$</span> riftview scan <span class="c-flag">--snapshot</span> <span class="c-str">scan-$(date +%F).json</span></div>
+              <div class="c-ok">✓ wrote scan-2026-05-11.json &nbsp;<span class="c-dim">2.1 MB</span></div>
+              <div>&nbsp;</div>
+              <div><span class="c-dim"># Diff against yesterday</span></div>
+              <div><span class="c-prompt">$</span> riftview diff scan-2026-05-10.json scan-2026-05-11.json</div>
+              <div><span class="c-num">+</span> 3 nodes added &nbsp;<span class="c-dim">(2 lambda · 1 queue)</span></div>
+              <div><span class="c-err">−</span> 1 node removed &nbsp;<span class="c-dim">(s3 bucket)</span></div>
+              <div>&nbsp;&nbsp;<span class="c-dim">~ 4 nodes modified</span></div>
+              <div>&nbsp;</div>
+              <div><span class="c-dim"># Re-run risks against the snapshot, no AWS hit</span></div>
+              <div><span class="c-prompt">$</span> riftview risks <span class="c-flag">--snapshot</span> <span class="c-str">scan-2026-05-11.json</span> <span class="c-flag">--fail-on</span> <span class="c-str">S2</span></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- CLI 03 — Exit codes + GitHub Actions -->
+      <article class="feature">
+        <div class="grid-split">
+          <div data-reveal>
+            <div class="feature-num"><b>03</b> &nbsp;/&nbsp; Exit codes you can <span class="mono">set -e</span> on</div>
+            <h3>Five exits. <span class="ember">Pinned by tests.</span></h3>
+            <p>
+              Every CI pipeline can branch on <span class="mono">$?</span> directly &mdash; the contract is enforced by tests, so a future release won&rsquo;t silently reshuffle the codes.
+            </p>
+            <div class="cli-exit">
+              <div class="row -ok"><span class="code">0</span><span class="name">OK</span><span class="when">Successful run, no gate tripped</span></div>
+              <div class="row -warn"><span class="code">1</span><span class="name">FINDINGS</span><span class="when"><span class="mono">--fail-on</span> matched, or drift detected</span></div>
+              <div class="row"><span class="code">2</span><span class="name">USAGE</span><span class="when">Bad invocation, unreadable snapshot</span></div>
+              <div class="row -err"><span class="code">3</span><span class="name">AUTH</span><span class="when">Credential failure, AccessDenied</span></div>
+              <div class="row -err"><span class="code">4</span><span class="name">RUNTIME</span><span class="when">Anything not covered above</span></div>
+            </div>
+          </div>
+
+          <div class="feature-demo" data-reveal style="--reveal-delay: 120ms">
+            <div class="demo-head">
+              <span>.github/workflows/drift.yml</span>
+              <span class="pill pill-ok"><span class="dot"></span>PR gate</span>
+            </div>
+            <div class="term" style="border: none; box-shadow: none">
+              <div class="term-body">
+                <div><span class="c-dim">name:</span> <span class="c-str">Infra drift</span></div>
+                <div><span class="c-dim">on:</span></div>
+                <div>&nbsp;&nbsp;<span class="c-dim">pull_request:</span></div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-dim">branches: [main]</span></div>
+                <div>&nbsp;</div>
+                <div><span class="c-dim">jobs:</span></div>
+                <div>&nbsp;&nbsp;<span class="c-dim">drift:</span></div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-dim">runs-on:</span> ubuntu-latest</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-dim">steps:</span></div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-num">-</span> <span class="c-dim">uses:</span> actions/checkout@v4</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-num">-</span> <span class="c-dim">uses:</span> aws-actions/configure-aws-credentials@v4</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-dim">with:</span> { role-to-assume: <span class="c-str">${{ secrets.AWS_ROLE }}</span> }</div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-num">-</span> <span class="c-dim">run:</span> npm install -g <span class="c-str">@riftview/cli</span></div>
+                <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="c-num">-</span> <span class="c-dim">run:</span> riftview drift <span class="c-flag">--state</span> terraform.tfstate <span class="c-flag">--fail-on-drift</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <div class="cli-foot" data-reveal>
+        <a href="https://www.npmjs.com/package/@riftview/cli" target="_blank" rel="noopener" class="btn btn-ghost">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" style="width: 1.1em; height: 1.1em">
+            <path d="M0 0v24h24V0H0zm19.2 19.2h-2.4v-9.6h-4.8v9.6H4.8V4.8h14.4v14.4z"/>
+          </svg>
+          npmjs.com/package/@riftview/cli
+        </a>
+        <a href="https://github.com/rift-view/riftview/blob/main/apps/cli/README.md" target="_blank" rel="noopener" class="btn btn-ghost">
+          Full CLI reference ↗
+        </a>
+      </div>
+    </div>
+  </section>
 
   <!-- ============================================================
        DOWNLOAD
